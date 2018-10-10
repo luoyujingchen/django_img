@@ -2,8 +2,8 @@ import json
 import logging
 
 from django.core.files.uploadedfile import UploadedFile
-from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.http import HttpResponse, FileResponse, HttpResponseBadRequest
+from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
@@ -82,3 +82,22 @@ def fileUpload(request,noajax=False):
 
 def home(request):
     return render(request,'home.html')
+
+
+def multi_show_uploaded(request, pk):
+    fl = get_object_or_404(MultiuploaderFile, id=pk)
+    return FileResponse(request,fl.file.path, fl.filename)
+
+
+def multiuploader_delete(request, pk):
+    if request.method == 'POST':
+        log.info('Called delete file. File id=' + str(pk))
+        fl = get_object_or_404(MultiuploaderFile, pk=pk)
+        fl.delete()
+        log.info('DONE. Deleted file id=' + str(pk))
+
+        return HttpResponse(1)
+
+    else:
+        log.info('Received not POST request to delete file view')
+        return HttpResponseBadRequest('Only POST accepted')

@@ -3,19 +3,6 @@ from random import choice
 from django.conf import settings
 from PIL import Image, ImageOps
 
-def generate_safe_pk(self):
-    from base64 import b32encode
-    from hashlib import sha1
-    from random import random
-    rude = ('lol',)
-    bad_pk = True
-    while bad_pk:
-        pk = b32encode(sha1(str(random())).digest()).lower()[:6]
-        bad_pk = False
-        for rw in rude:
-            if pk.find(rw) >= 0: bad_pk = True
-    return pk
-
 
 def get_thumbnail(img, thumb_size, quality=80, format='JPG'):
 
