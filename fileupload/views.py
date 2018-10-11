@@ -2,7 +2,7 @@ import json
 import logging
 
 from django.core.files.uploadedfile import UploadedFile
-from django.http import HttpResponse, FileResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import ugettext as _
@@ -55,7 +55,7 @@ def fileUpload(request,noajax=False):
             log.error(e)
 
         # generating json response array
-        result = [{"id": fl.id,
+        result = [{"id": fl.id.__str__(),
                    "name": filename,
                    "size": file_size,
                    "url": reverse('multiuploader_file_link', args=[fl.pk]),
@@ -72,10 +72,10 @@ def fileUpload(request,noajax=False):
                 redirect(request.META['HTTP_REFERER'])
 
         if "application/json" in request.META['HTTP_ACCEPT_ENCODING']:
-            mimetype = 'application/json'
+            content_type = 'application/json'
         else:
-            mimetype = 'text/plain'
-        return HttpResponse(response_data, mimetype=mimetype)
+            content_type = 'text/plain'
+        return HttpResponse(response_data, content_type=content_type)
     else:  # GET
         return HttpResponse('Only POST accepted')
 
@@ -86,7 +86,10 @@ def home(request):
 
 def multi_show_uploaded(request, pk):
     fl = get_object_or_404(MultiuploaderFile, id=pk)
-    return FileResponse(request,fl.file.path, fl.filename)
+    # return FileResponse(request,open(fl.file.path,'rb'), fl.name)
+    imagepath = fl.file.path
+    image_data = open(imagepath, "rb").read()
+    return HttpResponse(image_data, content_type="image/jpg")
 
 
 def multiuploader_delete(request, pk):

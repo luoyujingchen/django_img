@@ -4,6 +4,7 @@ from django.conf import settings
 from PIL import Image, ImageOps
 
 
+
 def get_thumbnail(img, thumb_size, quality=80, format='JPG'):
 
     thumb_size = thumb_size.split('x')
